@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Attendance Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root { --transition: 0.22s ease; }
+[data-theme="dark"] {
+  --bg:#0b0f1a; --bg2:#111827; --bg3:#1a2235; --bg4:#202d42;
+  --border:rgba(99,179,237,0.12); --border2:rgba(99,179,237,0.25);
+  --text:#e2eaf4; --text2:#7fa8c9; --text3:#3d6080;
+  --accent:#3b82f6; --accent2:#06b6d4; --accentg:linear-gradient(135deg,#3b82f6,#06b6d4);
+  --success:#22c55e; --danger:#ef4444; --warn:#f59e0b; --info:#8b5cf6;
+  --card:#111827; --sidebar:#0d1526; --glow:rgba(59,130,246,0.2);
+  --shadow:0 4px 24px rgba(0,0,0,0.4); --table-stripe:rgba(99,179,237,0.03); --input-bg:#1a2235;
+}
+[data-theme="light"] {
+  --bg:#f0f4f8; --bg2:#ffffff; --bg3:#f8fafc; --bg4:#eef2f7;
+  --border:rgba(59,130,246,0.15); --border2:rgba(59,130,246,0.35);
+  --text:#0f172a; --text2:#475569; --text3:#94a3b8;
+  --accent:#3b82f6; --accent2:#0891b2; --accentg:linear-gradient(135deg,#3b82f6,#0891b2);
+  --success:#16a34a; --danger:#dc2626; --warn:#d97706; --info:#7c3aed;
+  --card:#ffffff; --sidebar:#1e293b; --glow:rgba(59,130,246,0.15);
+  --shadow:0 4px 24px rgba(0,0,0,0.08); --table-stripe:rgba(59,130,246,0.03); --input-bg:#f8fafc;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:15px;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background var(--transition),color var(--transition);}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+.app{display:flex;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{width:240px;background:var(--sidebar);display:flex;flex-direction:column;padding:0;position:fixed;top:0;left:0;bottom:0;z-index:50;border-right:1px solid rgba(255,255,255,0.06);transition:background var(--transition);}
+.sb-brand{padding:1.5rem 1.25rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:10px;}
+.sb-brand .brand-icon{width:38px;height:38px;background:var(--accentg);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 0 20px var(--glow);}
+.sb-brand .brand-text{font-size:0.82rem;font-weight:700;color:#fff;line-height:1.3;}
+.sb-brand .brand-sub{font-size:0.65rem;color:rgba(255,255,255,0.4);font-family:'JetBrains Mono',monospace;}
+.sb-nav{padding:1rem 0;flex:1;overflow-y:auto;}
+.nav-section-label{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.12em;color:rgba(255,255,255,0.28);padding:0.75rem 1.25rem 0.35rem;font-family:'JetBrains Mono',monospace;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 1.25rem;cursor:pointer;font-size:0.85rem;color:rgba(255,255,255,0.5);border-left:3px solid transparent;transition:all 0.15s;user-select:none;}
+.nav-item:hover{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.85);}
+.nav-item.active{background:rgba(59,130,246,0.12);color:#fff;border-left-color:var(--accent);}
+.nav-item .ni{font-size:1rem;width:20px;text-align:center;flex-shrink:0;}
+.sb-footer{padding:1rem;border-top:1px solid rgba(255,255,255,0.07);}
+.admin-chip{display:flex;align-items:center;gap:9px;padding:8px 10px;background:rgba(255,255,255,0.05);border-radius:10px;cursor:pointer;transition:background 0.15s;}
+.admin-chip:hover{background:rgba(255,255,255,0.09);}
+.admin-ava{width:32px;height:32px;border-radius:50%;background:var(--accentg);display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#fff;flex-shrink:0;}
+.admin-info .ai-name{font-size:0.8rem;font-weight:600;color:#fff;}
+.admin-info .ai-role{font-size:0.65rem;color:rgba(255,255,255,0.4);}
+
+/* MAIN */
+.main{margin-left:240px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0.9rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;transition:background var(--transition),border-color var(--transition);}
+.topbar-left h1{font-size:1.2rem;font-weight:700;}
+.topbar-left .breadcrumb{font-size:0.72rem;color:var(--text2);margin-top:2px;font-family:'JetBrains Mono',monospace;}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.theme-toggle{width:52px;height:27px;background:var(--bg3);border:1px solid var(--border2);border-radius:27px;cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;}
+.theme-toggle::before{content:'';position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:var(--accentg);transition:transform 0.25s;}
+[data-theme="light"] .theme-toggle::before{transform:translateX(25px);}
+.theme-toggle .tt-icon{position:absolute;top:50%;transform:translateY(-50%);font-size:11px;}
+.tt-dark{left:6px;} .tt-light{right:6px;}
+.topbar-btn{padding:7px 16px;background:transparent;border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:0.8rem;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;transition:all 0.15s;}
+.topbar-btn:hover{background:var(--bg3);color:var(--text);}
+.back-topbar-btn{padding:7px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:0.8rem;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;transition:all 0.15s;display:none;align-items:center;gap:6px;}
+.back-topbar-btn:hover{background:var(--bg4);}
+.back-topbar-btn.visible{display:flex;}
+
+/* CONTENT */
+.content{flex:1;padding:2rem;}
+.panel{display:none;animation:fadeUp 0.25s ease;}
+.panel.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+/* SUBPAGE - slides over main content */
+.subpage{display:none;position:fixed;top:0;left:240px;right:0;bottom:0;background:var(--bg);z-index:45;overflow-y:auto;animation:slideIn 0.25s ease;}
+.subpage.active{display:block;}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:none;}}
+.subpage-inner{padding:2rem;}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;transition:background var(--transition),border-color var(--transition);}
+.card-title{font-size:0.95rem;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:1.25rem;}
+.card-title .ct-icon{font-size:1.1rem;}
+
+/* STAT CARDS */
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.75rem;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.25rem;display:flex;flex-direction:column;gap:6px;}
+.stat-card .sl{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);font-family:'JetBrains Mono',monospace;}
+.stat-card .sv{font-size:1.75rem;font-weight:800;}
+.stat-card .ss{font-size:0.7rem;color:var(--text2);}
+.stat-card.blue .sv{color:var(--accent);}
+.stat-card.green .sv{color:var(--success);}
+.stat-card.red .sv{color:var(--danger);}
+.stat-card.amber .sv{color:var(--warn);}
+
+/* SEARCH */
+.search-row{display:flex;gap:10px;margin-bottom:1.25rem;flex-wrap:wrap;}
+.search-input{flex:1;min-width:200px;padding:9px 14px;background:var(--input-bg);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.875rem;outline:none;transition:border-color 0.2s;}
+.search-input:focus{border-color:var(--accent);}
+.search-input::placeholder{color:var(--text3);}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+thead th{padding:11px 14px;text-align:left;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);background:var(--bg3);border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;white-space:nowrap;}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:nth-child(even) td{background:var(--table-stripe);}
+tbody tr:hover td{background:rgba(59,130,246,0.05);}
+
+/* BADGES */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:600;}
+.badge-high{background:rgba(34,197,94,0.12);color:var(--success);}
+.badge-mid{background:rgba(245,158,11,0.12);color:var(--warn);}
+.badge-low{background:rgba(239,68,68,0.12);color:var(--danger);}
+.badge-dept{background:rgba(59,130,246,0.1);color:var(--accent);font-size:0.7rem;padding:2px 8px;}
+.badge-present{background:rgba(34,197,94,0.12);color:var(--success);}
+.badge-absent{background:rgba(239,68,68,0.12);color:var(--danger);}
+.badge-late{background:rgba(245,158,11,0.12);color:var(--warn);}
+
+/* PROGRESS BAR */
+.pbar-wrap{display:flex;align-items:center;gap:8px;}
+.pbar{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;min-width:60px;}
+.pbar-fill{height:100%;border-radius:3px;transition:width 0.4s;}
+.pbar-label{font-size:0.75rem;font-weight:600;min-width:38px;text-align:right;}
+
+/* BUTTONS */
+.btn{padding:9px 20px;border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;border:none;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--accentg);color:#fff;}
+.btn-primary:hover{opacity:0.88;transform:translateY(-1px);}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--accent);}
+.btn-outline:hover{background:rgba(59,130,246,0.08);}
+.btn-danger{background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.3);}
+.btn-danger:hover{background:rgba(239,68,68,0.2);}
+.btn-warn{background:rgba(245,158,11,0.1);color:var(--warn);border:1px solid rgba(245,158,11,0.3);}
+.btn-warn:hover{background:rgba(245,158,11,0.2);}
+.btn-success{background:rgba(34,197,94,0.1);color:var(--success);border:1px solid rgba(34,197,94,0.3);}
+.btn-success:hover{background:rgba(34,197,94,0.2);}
+.btn-sm{padding:5px 12px;font-size:0.78rem;}
+.btn-xs{padding:4px 10px;font-size:0.72rem;}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-group.full{grid-column:1/-1;}
+.form-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text2);font-family:'JetBrains Mono',monospace;}
+.form-input,.form-select,.form-textarea{padding:9px 13px;background:var(--input-bg);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.875rem;outline:none;transition:border-color 0.2s,background 0.2s;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent);background:var(--bg3);}
+.form-input::placeholder{color:var(--text3);}
+.form-select{cursor:pointer;}
+.form-textarea{resize:vertical;min-height:70px;}
+option{background:var(--bg2);}
+
+/* PHOTO UPLOAD */
+.photo-upload{width:90px;height:90px;border:2px dashed var(--border2);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:0.65rem;color:var(--text2);gap:4px;transition:border-color 0.2s,background 0.2s;overflow:hidden;}
+.photo-upload:hover{border-color:var(--accent);background:rgba(59,130,246,0.05);}
+.photo-upload img{width:100%;height:100%;object-fit:cover;}
+
+/* TABS */
+.tab-row{display:flex;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap;}
+.tab-btn{padding:7px 16px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.8rem;font-weight:500;cursor:pointer;transition:all 0.15s;}
+.tab-btn:hover{border-color:var(--accent);color:var(--text);}
+.tab-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
+
+/* YEAR FILTER */
+.year-filter{display:flex;gap:6px;margin-bottom:1rem;}
+.yf-btn{padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:0.78rem;cursor:pointer;transition:all 0.15s;font-family:'Plus Jakarta Sans',monospace;}
+.yf-btn:hover{border-color:var(--accent2);color:var(--text);}
+.yf-btn.active{background:rgba(6,182,212,0.12);border-color:var(--accent2);color:var(--accent2);font-weight:600;}
+
+/* SECTION TABS */
+.section-tabs{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.stab{padding:8px 18px;border-radius:9px;border:1px solid var(--border);background:var(--card);color:var(--text2);font-size:0.82rem;font-weight:500;cursor:pointer;transition:all 0.15s;font-family:'Plus Jakarta Sans',sans-serif;}
+.stab:hover{border-color:var(--accent);color:var(--text);}
+.stab.active{background:rgba(59,130,246,0.12);border-color:var(--accent);color:var(--accent);font-weight:700;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:18px;padding:2rem;max-width:460px;width:90%;text-align:center;animation:modalIn 0.25s ease;}
+.modal.danger-modal{border-color:rgba(239,68,68,0.4);}
+.modal.wide-modal{max-width:560px;text-align:left;}
+@keyframes modalIn{from{transform:scale(0.93);opacity:0;}to{transform:none;opacity:1;}}
+.modal .modal-icon{font-size:2.5rem;margin-bottom:1rem;}
+.modal h3{font-size:1.1rem;font-weight:700;margin-bottom:0.75rem;}
+.modal p{font-size:0.875rem;color:var(--text2);line-height:1.6;margin-bottom:1.5rem;}
+.modal-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+
+/* DANGER ALERT */
+.danger-alert{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.25rem;font-size:0.83rem;color:var(--danger);display:flex;gap:10px;align-items:flex-start;}
+.danger-alert .da-icon{font-size:1.2rem;flex-shrink:0;margin-top:1px;}
+.warn-alert{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:0.875rem 1.1rem;font-size:0.82rem;color:var(--warn);display:flex;gap:8px;align-items:center;}
+
+/* OTP */
+.otp-row{display:flex;gap:8px;align-items:flex-end;}
+.otp-row .form-input{flex:1;}
+.otp-sent{font-size:0.75rem;color:var(--success);margin-top:4px;display:none;}
+
+/* TOAST */
+.toast-container{position:fixed;bottom:2rem;right:2rem;z-index:300;display:flex;flex-direction:column;gap:8px;}
+.toast{display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:10px;font-size:0.875rem;font-weight:500;color:#fff;min-width:240px;animation:toastIn 0.3s ease;box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+@keyframes toastIn{from{transform:translateX(100%);opacity:0;}to{transform:none;opacity:1;}}
+.toast.success{background:linear-gradient(135deg,#16a34a,#15803d);}
+.toast.error{background:linear-gradient(135deg,#dc2626,#b91c1c);}
+.toast.info{background:linear-gradient(135deg,#3b82f6,#1d4ed8);}
+.toast.warn{background:linear-gradient(135deg,#d97706,#b45309);}
+
+/* SETTINGS */
+.setting-row{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;}
+.setting-row .sr-info .sr-title{font-size:0.875rem;font-weight:600;}
+.setting-row .sr-info .sr-sub{font-size:0.75rem;color:var(--text2);margin-top:3px;}
+.toggle-wrap{position:relative;width:44px;height:24px;}
+.toggle-wrap input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:var(--bg4);border:1px solid var(--border2);border-radius:24px;cursor:pointer;transition:0.2s;}
+.toggle-slider::before{content:'';position:absolute;width:18px;height:18px;top:2px;left:2px;background:var(--text2);border-radius:50%;transition:0.2s;}
+.toggle-wrap input:checked+.toggle-slider{background:var(--accent);border-color:var(--accent);}
+.toggle-wrap input:checked+.toggle-slider::before{transform:translateX(20px);background:#fff;}
+
+/* PROFILE PANEL */
+.profile-card{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:2rem;display:flex;gap:2rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:1.5rem;}
+.pcard-avatar{width:80px;height:80px;border-radius:50%;background:var(--accentg);display:flex;align-items:center;justify-content:center;font-size:1.75rem;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 0 24px var(--glow);}
+.pcard-info h2{font-size:1.25rem;font-weight:800;margin-bottom:4px;}
+.pcard-info p{font-size:0.82rem;color:var(--text2);margin-bottom:6px;}
+.pcard-info .role-badge{display:inline-block;padding:3px 12px;background:var(--accentg);color:#fff;border-radius:20px;font-size:0.72rem;font-weight:700;}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;}
+.info-item{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 16px;}
+.info-item .ii-l{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-bottom:4px;}
+.info-item .ii-v{font-size:0.9rem;font-weight:600;}
+
+/* REMOVE SEARCH */
+.remove-search-result{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:none;margin-top:1rem;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.remove-search-result.show{display:flex;}
+.rsr-info .rsr-name{font-weight:600;font-size:0.95rem;}
+.rsr-info .rsr-meta{font-size:0.78rem;color:var(--text2);margin-top:3px;}
+
+/* PW STRENGTH */
+.pw-strength{height:4px;border-radius:2px;margin-top:6px;background:var(--bg4);overflow:hidden;}
+.pw-bar{height:100%;border-radius:2px;transition:width 0.3s,background 0.3s;}
+
+/* STUDENT PROFILE SUBPAGE */
+.sp-header{background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:2rem;display:flex;gap:1.75rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:1.5rem;}
+.sp-avatar{width:90px;height:90px;border-radius:50%;background:var(--accentg);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 0 28px var(--glow);}
+.sp-meta h2{font-size:1.3rem;font-weight:800;}
+.sp-meta .sp-id{font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--accent);margin-top:4px;}
+.sp-meta .sp-dept{font-size:0.82rem;color:var(--text2);margin-top:4px;}
+.sp-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:1.5rem;}
+.sp-field{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 16px;}
+.sp-field .sf-l{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-bottom:4px;}
+.sp-field .sf-v{font-size:0.9rem;font-weight:600;}
+
+/* ATTENDANCE % ALERT BOX */
+.att-alert-box{border-radius:12px;padding:1.25rem 1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:1.5rem;}
+.att-alert-box.danger{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);}
+.att-alert-box.safe{background:rgba(34,197,94,0.07);border:1px solid rgba(34,197,94,0.25);}
+.att-alert-box .aab-left .aab-title{font-size:1rem;font-weight:700;}
+.att-alert-box .aab-left .aab-sub{font-size:0.8rem;color:var(--text2);margin-top:4px;}
+.att-pct-big{font-size:2.5rem;font-weight:800;line-height:1;}
+.att-alert-box.danger .att-pct-big{color:var(--danger);}
+.att-alert-box.safe .att-pct-big{color:var(--success);}
+
+/* SUBPAGE TOPBAR */
+.sub-topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0.9rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.sub-topbar-left{display:flex;align-items:center;gap:12px;}
+.sub-topbar-left h2{font-size:1.1rem;font-weight:700;}
+.sub-topbar-left .sub-breadcrumb{font-size:0.7rem;color:var(--text2);font-family:'JetBrains Mono',monospace;}
+.sub-back-btn{padding:6px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:0.8rem;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px;}
+.sub-back-btn:hover{background:var(--bg4);}
+
+/* DETAIL DROPDOWN SECTION */
+.detail-select-row{display:flex;gap:10px;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;}
+.detail-select-row .form-select{width:220px;}
+.detail-select-row label{font-size:0.78rem;color:var(--text2);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.06em;}
+
+/* SEND ALERT MODAL */
+.alert-compose{display:flex;flex-direction:column;gap:12px;}
+.alert-compose textarea{width:100%;padding:10px 14px;background:var(--input-bg);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.875rem;outline:none;resize:vertical;min-height:100px;transition:border-color 0.2s;}
+.alert-compose textarea:focus{border-color:var(--accent);}
+
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100);}
+  .main{margin-left:0;}
+  .content{padding:1rem;}
+  .subpage{left:0;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<aside class="sidebar">
+  <div class="sb-brand">
+    <div class="brand-icon">🎓</div>
+    <div>
+      <div class="brand-text">AttendanceMS</div>
+      <div class="brand-sub">// admin panel v2.0</div>
+    </div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-section-label">Main</div>
+    <div class="nav-item active" onclick="switchPanel('overview',this)"><span class="ni">📊</span> Overall Attendance</div>
+    <div class="nav-item" onclick="switchPanel('directory',this)"><span class="ni">📋</span> Student Report</div>
+    <div class="nav-section-label">Management</div>
+    <div class="nav-item" onclick="switchPanel('manage',this)"><span class="ni">⚙️</span> Add / Remove</div>
+    <div class="nav-section-label">Account</div>
+    <div class="nav-item" onclick="switchPanel('profile',this)"><span class="ni">👤</span> Admin Profile</div>
+    <div class="nav-item" onclick="switchPanel('settings',this)"><span class="ni">🔧</span> Settings</div>
+    <div class="nav-item" onclick="confirmLogout()"><span class="ni">🚪</span> Logout</div>
+  </nav>
+  <div class="sb-footer">
+    <div class="admin-chip">
+      <div class="admin-ava">AD</div>
+      <div class="admin-info">
+        <div class="ai-name">Admin</div>
+        <div class="ai-role">System Administrator</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ══════════ MAIN ══════════ -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1 id="page-title">Overall Attendance</h1>
+      <div class="breadcrumb" id="breadcrumb">Dashboard / Overview</div>
+    </div>
+    <div class="topbar-right">
+      <div class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+        <span class="tt-icon tt-dark">🌙</span>
+        <span class="tt-icon tt-light">☀️</span>
+      </div>
+      <button class="topbar-btn" onclick="showToast('Exported!','success')">⬇ Export</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ════ OVERVIEW ════ -->
+    <div class="panel active" id="panel-overview">
+      <div class="stat-row">
+        <div class="stat-card blue"><div class="sl">Total Students</div><div class="sv">284</div><div class="ss">across all departments</div></div>
+        <div class="stat-card green"><div class="sl">Avg Attendance</div><div class="sv">81%</div><div class="ss">this semester</div></div>
+        <div class="stat-card amber"><div class="sl">Below 75%</div><div class="sv">34</div><div class="ss">students at risk</div></div>
+        <div class="stat-card red"><div class="sl">Defaulters</div><div class="sv">12</div><div class="ss">below 60%</div></div>
+        <div class="stat-card blue"><div class="sl">Working Days</div><div class="sv">90</div><div class="ss">this semester</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-icon">📋</span> Student Attendance Report</div>
+        <div class="search-row">
+          <input class="search-input" placeholder="🔍  Search by name, ID or department…" oninput="filterTable(this.value)">
+          <select class="form-select" style="width:160px" onchange="filterDept(this.value)">
+            <option value="">All Departments</option>
+            <option>BSC</option><option>BCOM</option><option>BA</option><option>BSW</option><option>BBA</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Student Name</th><th>Student ID</th><th>Department</th><th>Working Days</th><th>Total Attendance</th><th>Percentage</th><th>Status</th></tr></thead>
+            <tbody id="overview-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ STUDENT REPORT ════ -->
+    <div class="panel" id="panel-directory">
+      <div class="card">
+        <div class="card-title"><span class="ct-icon">📋</span> Student Report</div>
+        <div class="tab-row" id="dept-tabs">
+          <button class="tab-btn active" onclick="switchDept('BSC',this)">BSC</button>
+          <button class="tab-btn" onclick="switchDept('BCOM',this)">BCOM</button>
+          <button class="tab-btn" onclick="switchDept('BA',this)">BA</button>
+          <button class="tab-btn" onclick="switchDept('BSW',this)">BSW</button>
+          <button class="tab-btn" onclick="switchDept('BBA',this)">BBA</button>
+        </div>
+        <div class="year-filter">
+          <button class="yf-btn active" onclick="switchYear(1,this)">1st Year</button>
+          <button class="yf-btn" onclick="switchYear(2,this)">2nd Year</button>
+          <button class="yf-btn" onclick="switchYear(3,this)">3rd Year</button>
+        </div>
+        <div class="search-row">
+          <input class="search-input" placeholder="🔍  Search students…" oninput="filterDirTable(this.value)">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Student Name</th><th>Student ID</th>
+                <th>Profile</th><th>Attendance</th><th>Attendance Details</th>
+              </tr>
+            </thead>
+            <tbody id="dir-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ MANAGE ════ -->
+    <div class="panel" id="panel-manage">
+      <div class="section-tabs">
+        <button class="stab active" onclick="switchManage('add-student',this)">➕ Add Student</button>
+        <button class="stab" onclick="switchManage('add-branch',this)">🏫 Add Branch</button>
+        <button class="stab" onclick="switchManage('remove-student',this)">🗑️ Remove Student</button>
+        <button class="stab" onclick="switchManage('remove-branch',this)">⛔ Remove Branch</button>
+      </div>
+      <div id="manage-add-student">
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">➕</span> Add New Student</div>
+          <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+            <div>
+              <div class="photo-upload" id="photo-upload-zone" onclick="document.getElementById('photo-file-input').click()">
+                <span style="font-size:1.5rem;">📷</span><span>Upload Photo</span>
+              </div>
+              <input type="file" id="photo-file-input" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+            </div>
+            <div style="font-size:0.78rem;color:var(--text2);"><p>📌 Upload a clear passport-size photo</p><p style="margin-top:4px;">JPG, PNG (max 2MB)</p></div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Full Name *</label><input class="form-input" placeholder="e.g. Rahul Sharma"/></div>
+            <div class="form-group"><label class="form-label">Username *</label><input class="form-input" placeholder="e.g. rahul.sharma"/></div>
+            <div class="form-group"><label class="form-label">Password *</label><input class="form-input" type="password" id="student-pw" placeholder="Min 8 characters" oninput="checkPwStrength(this,'spw-bar')"/>
+              <div class="pw-strength"><div class="pw-bar" id="spw-bar"></div></div></div>
+            <div class="form-group"><label class="form-label">Department *</label>
+              <select class="form-select"><option value="">Select Department</option><option>BSC</option><option>BCOM</option><option>BA</option><option>BSW</option><option>BBA</option></select></div>
+            <div class="form-group"><label class="form-label">Year *</label>
+              <select class="form-select"><option value="">Select Year</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option></select></div>
+            <div class="form-group"><label class="form-label">Semester *</label>
+              <select class="form-select"><option value="">Select Semester</option><option>Semester 1</option><option>Semester 2</option><option>Semester 3</option><option>Semester 4</option><option>Semester 5</option><option>Semester 6</option></select></div>
+            <div class="form-group"><label class="form-label">Email ID *</label><input class="form-input" type="email" placeholder="student@college.edu"/></div>
+            <div class="form-group"><label class="form-label">Phone Number *</label>
+              <div class="otp-row"><input class="form-input" id="student-phone" type="tel" placeholder="+91 XXXXX XXXXX"/>
+              <button class="btn btn-outline btn-sm" onclick="sendOTP()">Send OTP</button></div>
+              <div class="otp-sent" id="otp-sent-msg">✅ OTP sent!</div></div>
+            <div class="form-group"><label class="form-label">OTP Verify</label><input class="form-input" placeholder="Enter 6-digit OTP"/></div>
+            <div class="form-group"><label class="form-label">Aadhar Number *</label><input class="form-input" placeholder="XXXX XXXX XXXX"/></div>
+            <div class="form-group full"><label class="form-label">City / Local Address *</label><textarea class="form-textarea" placeholder="Flat/House No, Street, City"></textarea></div>
+            <div class="form-group full"><label class="form-label">Home / Permanent Address *</label><textarea class="form-textarea" placeholder="Village/Town, District, State – PIN"></textarea></div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:1.5rem;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="saveStudent()">💾 Save Student</button>
+            <button class="btn btn-outline" onclick="clearAddForm()">✕ Clear Form</button>
+          </div>
+        </div>
+      </div>
+      <div id="manage-add-branch" style="display:none">
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">🏫</span> Add New Branch / Department</div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Department Name *</label><input class="form-input" placeholder="e.g. Bachelor of Science"/></div>
+            <div class="form-group"><label class="form-label">Branch ID / Code *</label><input class="form-input" placeholder="e.g. BSC001"/></div>
+            <div class="form-group"><label class="form-label">Username *</label><input class="form-input" placeholder="Dept. login username"/></div>
+            <div class="form-group"><label class="form-label">Password *</label><input class="form-input" type="password" id="branch-pw" placeholder="Set department password" oninput="checkPwStrength(this,'bpw-bar')"/>
+              <div class="pw-strength"><div class="pw-bar" id="bpw-bar"></div></div></div>
+            <div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" type="tel" placeholder="+91 XXXXX XXXXX"/></div>
+            <div class="form-group full"><label class="form-label">Department Address</label><textarea class="form-textarea" placeholder="Block, Building, Campus Address"></textarea></div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:1.5rem;">
+            <button class="btn btn-primary" onclick="saveBranch()">💾 Save Branch</button>
+            <button class="btn btn-outline">✕ Clear</button>
+          </div>
+        </div>
+      </div>
+      <div id="manage-remove-student" style="display:none">
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">🗑️</span> Remove Individual Student</div>
+          <div class="danger-alert"><span class="da-icon">⚠️</span><div>Removing a student is permanent. All attendance records and profile data will be deleted and <strong>cannot be restored</strong>.</div></div>
+          <div class="search-row"><input class="search-input" id="remove-search-input" placeholder="🔍  Search by Name or Registration No…" oninput="searchStudentToRemove(this.value)"></div>
+          <div class="remove-search-result" id="remove-result">
+            <div class="rsr-info"><div class="rsr-name" id="rsr-name">—</div><div class="rsr-meta" id="rsr-meta">—</div></div>
+            <button class="btn btn-danger" onclick="openRemoveModal()">🗑️ Remove Student</button>
+          </div>
+        </div>
+      </div>
+      <div id="manage-remove-branch" style="display:none">
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">⛔</span> Remove Branch / Department</div>
+          <div class="danger-alert"><span class="da-icon">🚨</span><div><strong>Critical Warning:</strong> Deleting a department will permanently remove ALL student records and attendance data under it. This <strong>cannot be undone</strong>.</div></div>
+          <div class="form-group" style="max-width:320px;">
+            <label class="form-label">Select Department to Remove</label>
+            <select class="form-select" id="remove-branch-select">
+              <option value="">-- Choose Department --</option>
+              <option>BSC — Bachelor of Science</option><option>BCOM — Bachelor of Commerce</option>
+              <option>BA — Bachelor of Arts</option><option>BSW — Bachelor of Social Work</option>
+              <option>BBA — Bachelor of Business Administration</option>
+            </select>
+          </div>
+          <button class="btn btn-danger" style="margin-top:1rem;" onclick="openRemoveBranchModal()">⛔ Remove Department</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ PROFILE ════ -->
+    <div class="panel" id="panel-profile">
+      <div class="profile-card">
+        <div class="pcard-avatar">AD</div>
+        <div class="pcard-info">
+          <h2>System Administrator</h2>
+          <p>admin@attendancems.edu.in • Last login: 21 Apr 2026, 09:14 AM</p>
+          <span class="role-badge">Super Admin</span>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="ii-l">Username</div><div class="ii-v">admin</div></div>
+        <div class="info-item"><div class="ii-l">Email</div><div class="ii-v">admin@attendancems.edu.in</div></div>
+        <div class="info-item"><div class="ii-l">Phone</div><div class="ii-v">+91 98765 00001</div></div>
+        <div class="info-item"><div class="ii-l">Role</div><div class="ii-v">Super Administrator</div></div>
+        <div class="info-item"><div class="ii-l">College</div><div class="ii-v">Govt. Science College, Mangaluru</div></div>
+        <div class="info-item"><div class="ii-l">Department Access</div><div class="ii-v">All Departments</div></div>
+      </div>
+    </div>
+
+    <!-- ════ SETTINGS ════ -->
+    <div class="panel" id="panel-settings">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1.5rem;">
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">🔐</span> Change Password</div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div class="form-group"><label class="form-label">Current Password</label><input class="form-input" type="password" placeholder="Enter current password"/></div>
+            <div class="form-group"><label class="form-label">New Password</label><input class="form-input" type="password" id="new-pw" placeholder="Min 8 characters" oninput="checkPwStrength(this,'npw-bar')"/>
+              <div class="pw-strength"><div class="pw-bar" id="npw-bar"></div></div></div>
+            <div class="form-group"><label class="form-label">Confirm New Password</label><input class="form-input" type="password" placeholder="Re-enter new password"/></div>
+            <button class="btn btn-primary" style="align-self:flex-start;margin-top:6px;" onclick="changePassword()">🔐 Update Password</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">🔔</span> Notifications</div>
+          <div class="setting-row"><div class="sr-info"><div class="sr-title">Email Alerts</div><div class="sr-sub">Alert when student below 75%</div></div><label class="toggle-wrap"><input type="checkbox" checked/><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div class="sr-info"><div class="sr-title">SMS Notifications</div><div class="sr-sub">Send SMS to defaulters</div></div><label class="toggle-wrap"><input type="checkbox"/><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div class="sr-info"><div class="sr-title">Daily Report</div><div class="sr-sub">Email daily attendance digest</div></div><label class="toggle-wrap"><input type="checkbox" checked/><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div class="sr-info"><div class="sr-title">Auto Backup</div><div class="sr-sub">Weekly database backup</div></div><label class="toggle-wrap"><input type="checkbox" checked/><span class="toggle-slider"></span></label></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">🗃️</span> Data Management</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <button class="btn btn-outline" style="justify-content:flex-start;" onclick="showToast('Exported as CSV','success')">📊 Export Attendance Report (CSV)</button>
+            <button class="btn btn-outline" style="justify-content:flex-start;" onclick="showToast('Student data exported','success')">👥 Export Student Data</button>
+            <button class="btn btn-outline" style="justify-content:flex-start;" onclick="showToast('Backup initiated','info')">💾 Create Database Backup</button>
+            <button class="btn btn-danger" style="justify-content:flex-start;" onclick="showToast('Logs cleared','warn')">🧹 Clear System Logs</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">⚙️</span> System Settings</div>
+          <div class="form-group" style="margin-bottom:12px;"><label class="form-label">College Name</label><input class="form-input" value="Govt. Science College, Mangaluru"/></div>
+          <div class="form-group" style="margin-bottom:12px;"><label class="form-label">Min Attendance Required (%)</label><input class="form-input" type="number" value="75" min="0" max="100"/></div>
+          <div class="form-group" style="margin-bottom:16px;"><label class="form-label">Academic Year</label><input class="form-input" value="2025–2026"/></div>
+          <button class="btn btn-primary" onclick="showToast('Settings saved!','success')">💾 Save Settings</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ══════════════════════════════════════
+     SUBPAGE 1: STUDENT PROFILE
+══════════════════════════════════════ -->
+<div class="subpage" id="subpage-profile">
+  <div class="sub-topbar">
+    <div class="sub-topbar-left">
+      <button class="sub-back-btn" onclick="closeSubpage('subpage-profile')">← Back</button>
+      <div>
+        <h2 id="sp-title">Student Profile</h2>
+        <div class="sub-breadcrumb">Student Report / Profile</div>
+      </div>
+    </div>
+  </div>
+  <div class="subpage-inner">
+    <div class="sp-header">
+      <div class="sp-avatar" id="sp-avatar">RS</div>
+      <div class="sp-meta">
+        <h2 id="sp-name">—</h2>
+        <div class="sp-id" id="sp-id">—</div>
+        <div class="sp-dept" id="sp-dept">—</div>
+      </div>
+    </div>
+    <div class="sp-fields" id="sp-fields"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SUBPAGE 2: TODAY'S ATTENDANCE REPORT
+══════════════════════════════════════ -->
+<div class="subpage" id="subpage-attendance">
+  <div class="sub-topbar">
+    <div class="sub-topbar-left">
+      <button class="sub-back-btn" onclick="closeSubpage('subpage-attendance')">← Back</button>
+      <div>
+        <h2 id="att-report-title">Today's Attendance Report</h2>
+        <div class="sub-breadcrumb" id="att-report-date">Student Report / Attendance</div>
+      </div>
+    </div>
+  </div>
+  <div class="subpage-inner">
+    <div class="sp-header" style="padding:1.25rem 1.5rem;">
+      <div class="sp-avatar" id="att-sp-avatar">RS</div>
+      <div class="sp-meta">
+        <h2 id="att-sp-name">—</h2>
+        <div class="sp-id" id="att-sp-id">—</div>
+        <div class="sp-dept" id="att-sp-dept">—</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="ct-icon">📅</span> Today's Attendance — <span id="today-date-label" style="color:var(--accent2);font-size:0.9rem;"></span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Subject</th><th>Time</th><th>Status</th><th>Marked By</th></tr></thead>
+          <tbody id="today-att-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SUBPAGE 3: ATTENDANCE DETAILS (MONTHLY + OVERALL)
+══════════════════════════════════════ -->
+<div class="subpage" id="subpage-details">
+  <div class="sub-topbar">
+    <div class="sub-topbar-left">
+      <button class="sub-back-btn" onclick="closeSubpage('subpage-details')">← Back</button>
+      <div>
+        <h2>Attendance Details</h2>
+        <div class="sub-breadcrumb">Student Report / Attendance Details</div>
+      </div>
+    </div>
+  </div>
+  <div class="subpage-inner">
+    <!-- Student info strip -->
+    <div style="display:flex;align-items:center;gap:1.25rem;background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+      <div class="sp-avatar" style="width:52px;height:52px;font-size:1.1rem;" id="det-avatar">RS</div>
+      <div>
+        <div style="font-size:1rem;font-weight:700;" id="det-name">—</div>
+        <div style="font-size:0.78rem;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-top:3px;" id="det-meta">—</div>
+      </div>
+    </div>
+
+    <!-- Attendance % alert -->
+    <div id="att-pct-alert" class="att-alert-box safe" style="margin-bottom:1.5rem;">
+      <div class="aab-left">
+        <div class="aab-title" id="att-pct-title">Attendance Status</div>
+        <div class="aab-sub" id="att-pct-sub">Overall attendance for this semester</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+        <div class="att-pct-big" id="att-pct-num">—</div>
+        <button class="btn btn-warn btn-sm" id="send-alert-btn" onclick="openAlertModal()" style="display:none;">⚠️ Send Alert to Student</button>
+      </div>
+    </div>
+
+    <!-- Dropdown filter -->
+    <div class="detail-select-row">
+      <label>View Report:</label>
+      <select class="form-select" onchange="renderDetailTable(this.value)">
+        <option value="">-- Select Report Type --</option>
+        <option value="monthly">Monthly Attendance Report</option>
+        <option value="overall">Overall Attendance Report</option>
+      </select>
+    </div>
+
+    <div id="detail-table-wrap" style="display:none;">
+      <div class="card">
+        <div class="card-title"><span class="ct-icon" id="det-icon">📆</span> <span id="det-table-title">Report</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Date</th><th>Subject</th><th>Time</th><th>Status</th></tr></thead>
+            <tbody id="detail-tbody"></tbody>
+          </table>
+        </div>
+        <!-- Summary row -->
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:1.25rem;" id="detail-summary"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<!-- ══════════ MODALS ══════════ -->
+<div class="modal-overlay" id="modal-remove-student">
+  <div class="modal danger-modal">
+    <div class="modal-icon">🗑️</div>
+    <h3>Remove Student?</h3>
+    <p>Are you sure you want to permanently delete <strong id="modal-student-name">this student</strong>?<br>All attendance records and files will be <strong>permanently deleted</strong>.</p>
+    <div class="modal-btns">
+      <button class="btn btn-outline" onclick="closeModal('modal-remove-student')">✕ No, Cancel</button>
+      <button class="btn btn-danger" onclick="removeStudent()">✓ Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-remove-branch">
+  <div class="modal danger-modal">
+    <div class="modal-icon">🚨</div>
+    <h3 style="color:var(--danger)">WARNING — Irreversible Action</h3>
+    <p>You are about to delete the entire <strong id="modal-branch-name">department</strong>.<br><br>⚠️ If you confirm, you <strong>cannot restore</strong> the deleted department or any student details.</p>
+    <div class="modal-btns">
+      <button class="btn btn-outline" onclick="closeModal('modal-remove-branch')">✕ No, Cancel</button>
+      <button class="btn btn-danger" onclick="removeBranch()">🚨 Yes, Delete Permanently</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-logout">
+  <div class="modal">
+    <div class="modal-icon">🚪</div>
+    <h3>Logout?</h3>
+    <p>Are you sure you want to sign out of the admin panel?</p>
+    <div class="modal-btns">
+      <button class="btn btn-outline" onclick="closeModal('modal-logout')">Cancel</button>
+      <button class="btn btn-primary" onclick="doLogout()">Yes, Logout</button>
+    </div>
+  </div>
+</div>
+
+<!-- SEND ALERT MODAL -->
+<div class="modal-overlay" id="modal-alert">
+  <div class="modal wide-modal">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;">
+      <span style="font-size:1.5rem;">⚠️</span>
+      <div>
+        <h3 style="font-size:1rem;margin:0;">Send Attendance Alert</h3>
+        <p style="font-size:0.75rem;color:var(--text2);margin:2px 0 0;font-family:'JetBrains Mono',monospace;" id="alert-to-label">To: —</p>
+      </div>
+    </div>
+    <div class="warn-alert" style="margin-bottom:1rem;">
+      <span>⚠️</span>
+      <span id="alert-pct-warning">Student's attendance is below 75%. Send an alert to their login page.</span>
+    </div>
+    <div class="alert-compose">
+      <div class="form-group">
+        <label class="form-label">Alert Message</label>
+        <textarea id="alert-message" placeholder="Write your alert message here…">Dear Student,
+
+Your current attendance is below the required 75% threshold. Please ensure regular attendance to avoid academic penalties.
+
+Regards,
+Admin — AttendanceMS</textarea>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:8px;">
+        <button class="btn btn-outline" onclick="closeModal('modal-alert')">Cancel</button>
+        <button class="btn btn-warn" onclick="sendAlert()">📨 Send Alert</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ══════════════════════════
+// DATA
+// ══════════════════════════
+const students = [
+  {name:'Rahul Sharma',   id:'STU001',dept:'BSC', year:1,sem:2,wd:90,att:82,phone:'9876543210',email:'rahul@college.edu',  dob:'15 Mar 2003',aadhar:'1234 5678 9012',city:'MG Road, Mangaluru',home:'Udupi, Karnataka',username:'rahul.sharma'},
+  {name:'Priya Menon',    id:'STU002',dept:'BCOM',year:1,sem:2,wd:90,att:75,phone:'9123456780',email:'priya@college.edu',  dob:'22 Jul 2003',aadhar:'2345 6789 0123',city:'Hampankatta, Mangaluru',home:'Kasaragod, Kerala',username:'priya.menon'},
+  {name:'Arun Kumar',     id:'STU003',dept:'BA',  year:2,sem:4,wd:90,att:63,phone:'9988776655',email:'arun@college.edu',   dob:'05 Jan 2002',aadhar:'3456 7890 1234',city:'Bejai, Mangaluru',home:'Belthangady, DK',username:'arun.kumar'},
+  {name:'Sneha Nair',     id:'STU004',dept:'BSW', year:2,sem:4,wd:90,att:90,phone:'9765432100',email:'sneha@college.edu',  dob:'18 Sep 2002',aadhar:'4567 8901 2345',city:'Kankanady, Mangaluru',home:'Puttur, DK',username:'sneha.nair'},
+  {name:'Vijay Shetty',   id:'STU005',dept:'BBA', year:3,sem:6,wd:90,att:55,phone:'9871234560',email:'vijay@college.edu',  dob:'30 Apr 2001',aadhar:'5678 9012 3456',city:'Urwa, Mangaluru',home:'Bantwal, DK',username:'vijay.shetty'},
+  {name:'Kavitha Rao',    id:'STU006',dept:'BSC', year:1,sem:2,wd:90,att:88,phone:'9654321007',email:'kavitha@college.edu',dob:'12 Dec 2003',aadhar:'6789 0123 4567',city:'Balmatta, Mangaluru',home:'Mangaluru City',username:'kavitha.rao'},
+  {name:'Mohammed Imran', id:'STU007',dept:'BCOM',year:2,sem:3,wd:90,att:71,phone:'9543210987',email:'imran@college.edu', dob:'08 Feb 2002',aadhar:'7890 1234 5678',city:'Bunder, Mangaluru',home:'Ullal, Mangaluru',username:'m.imran'},
+  {name:'Deepa Shetty',   id:'STU008',dept:'BA',  year:3,sem:5,wd:90,att:95,phone:'9432109876',email:'deepa@college.edu', dob:'25 Jun 2001',aadhar:'8901 2345 6789',city:'Attavar, Mangaluru',home:'Sullia, DK',username:'deepa.shetty'},
+  {name:'Ranjith P',      id:'STU009',dept:'BSW', year:1,sem:1,wd:90,att:60,phone:'9321098765',email:'ranjith@college.edu',dob:'14 Nov 2003',aadhar:'9012 3456 7890',city:'Pumpwell, Mangaluru',home:'Perinthalmanna, Kerala',username:'ranjith.p'},
+  {name:'Ananya Bhat',    id:'STU010',dept:'BBA', year:2,sem:3,wd:90,att:78,phone:'9210987654',email:'ananya@college.edu',dob:'03 Aug 2002',aadhar:'0123 4567 8901',city:'Kadri, Mangaluru',home:'Udupi, Karnataka',username:'ananya.bhat'},
+  {name:'Suresh Kumar',   id:'STU011',dept:'BSC', year:3,sem:6,wd:90,att:84,phone:'9109876543',email:'suresh@college.edu',dob:'20 Oct 2001',aadhar:'1122 3344 5566',city:'Derebail, Mangaluru',home:'Moodbidri, DK',username:'suresh.kumar'},
+  {name:'Lakshmi Prasad', id:'STU012',dept:'BCOM',year:3,sem:5,wd:90,att:91,phone:'9098765432',email:'lakshmi@college.edu',dob:'07 May 2001',aadhar:'2233 4455 6677',city:'Mangaladevi, Mangaluru',home:'Kundapur, UK',username:'lakshmi.p'},
+  {name:'Kartik Nayak',   id:'STU013',dept:'BA',  year:1,sem:2,wd:90,att:67,phone:'8987654321',email:'kartik@college.edu',dob:'29 Mar 2003',aadhar:'3344 5566 7788',city:'Paldane, Mangaluru',home:'Karkala, UK',username:'kartik.nayak'},
+  {name:'Pooja Hegde',    id:'STU014',dept:'BSW', year:3,sem:6,wd:90,att:98,phone:'8876543210',email:'pooja@college.edu', dob:'16 Jan 2001',aadhar:'4455 6677 8899',city:'Kavoor, Mangaluru',home:'Sirsi, UK',username:'pooja.hegde'},
+  {name:'Naveen R',       id:'STU015',dept:'BBA', year:1,sem:1,wd:90,att:72,phone:'8765432109',email:'naveen@college.edu',dob:'11 Jul 2003',aadhar:'5566 7788 9900',city:'Bondel, Mangaluru',home:'Dharmasthala, DK',username:'naveen.r'},
+];
+
+// Mock attendance data per student
+function genTodayAtt(s) {
+  const subjects = ['Machine Learning','Data Structures','Computer Networks','DBMS','Mathematics'];
+  const times = ['09:00 AM','10:30 AM','12:00 PM','02:00 PM','03:30 PM'];
+  const statuses = ['present','present','absent','present','late'];
+  return subjects.slice(0,3).map((sub,i)=>({
+    subject: sub, time: times[i],
+    status: Math.random()>0.3?'present':'absent',
+    by: 'Face Recognition'
+  }));
+}
+function genMonthlyAtt(s) {
+  const subjects = ['Machine Learning','Data Structures','Computer Networks','DBMS','Mathematics'];
+  const rows = [];
+  for(let d=1;d<=20;d++){
+    if(d%7===0||d%7===1) continue;
+    rows.push({
+      date:`${String(d).padStart(2,'0')} Apr 2026`,
+      subject: subjects[d%5],
+      time: ['09:00 AM','10:30 AM','12:00 PM','02:00 PM'][d%4],
+      status: Math.random()*100 < (s.att) ? 'present' : (Math.random()>0.5?'absent':'late')
+    });
+  }
+  return rows.slice(0,15);
+}
+function genOverallAtt(s) {
+  const months = ['Jan 2026','Feb 2026','Mar 2026','Apr 2026'];
+  const subjects = ['Machine Learning','Data Structures','Computer Networks','DBMS'];
+  return months.flatMap((m,mi)=>
+    subjects.map((sub,si)=>({
+      date: m, subject: sub,
+      time: ['09:00 AM','10:30 AM','12:00 PM','02:00 PM'][si],
+      status: Math.random()*100 < s.att ? 'present' : (Math.random()>0.5?'absent':'late')
+    }))
+  );
+}
+
+let currentDept='BSC', currentYear=1, selectedStudent=null, activeAlertStudent=null;
+
+// ══════════════════════════
+// INIT
+// ══════════════════════════
+function init() {
+  renderOverviewTable(students);
+  renderDirectoryTable();
+  document.getElementById('today-date-label').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+}
+
+// THEME
+function toggleTheme() {
+  document.documentElement.dataset.theme = document.documentElement.dataset.theme==='dark'?'light':'dark';
+}
+
+// PANEL SWITCHING
+const titles = {
+  overview:['Overall Attendance','Dashboard / Overview'],
+  directory:['Student Report','Dashboard / Student Report'],
+  manage:['Add / Remove Management','Dashboard / Management'],
+  profile:['Admin Profile','Dashboard / Profile'],
+  settings:['Settings & Security','Dashboard / Settings'],
+};
+function switchPanel(id, el) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('page-title').textContent=titles[id][0];
+  document.getElementById('breadcrumb').textContent=titles[id][1];
+  closeAllSubpages();
+}
+
+// ══════════════════════════
+// OVERVIEW TABLE
+// ══════════════════════════
+function pct(att,wd){return Math.round((att/wd)*100);}
+function pctBadge(p){
+  if(p>=85) return `<span class="badge badge-high">${p}%</span>`;
+  if(p>=75) return `<span class="badge badge-mid">${p}%</span>`;
+  return `<span class="badge badge-low">${p}%</span>`;
+}
+function pbarColor(p){return p>=85?'var(--success)':p>=75?'var(--warn)':'var(--danger)';}
+
+function renderOverviewTable(data){
+  document.getElementById('overview-tbody').innerHTML = data.map((s,i)=>{
+    const p=pct(s.att,s.wd);
+    return `<tr>
+      <td style="color:var(--text2);font-family:'JetBrains Mono',monospace;font-size:.78rem">${i+1}</td>
+      <td style="font-weight:600">${s.name}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--accent)">${s.id}</td>
+      <td><span class="badge badge-dept">${s.dept}</span></td>
+      <td style="text-align:center">${s.wd}</td>
+      <td style="text-align:center">${s.att}</td>
+      <td><div class="pbar-wrap"><div class="pbar"><div class="pbar-fill" style="width:${p}%;background:${pbarColor(p)}"></div></div>${pctBadge(p)}</div></td>
+      <td>${p>=75?'<span class="badge badge-high">✓ Safe</span>':'<span class="badge badge-low">⚠ At Risk</span>'}</td>
+    </tr>`;
+  }).join('');
+}
+function filterTable(q){
+  renderOverviewTable(students.filter(s=>s.name.toLowerCase().includes(q.toLowerCase())||s.id.toLowerCase().includes(q.toLowerCase())||s.dept.toLowerCase().includes(q.toLowerCase())));
+}
+function filterDept(dept){renderOverviewTable(dept?students.filter(s=>s.dept===dept):students);}
+
+// ══════════════════════════
+// DIRECTORY (STUDENT REPORT)
+// ══════════════════════════
+function switchDept(dept,el){
+  currentDept=dept;
+  document.querySelectorAll('#dept-tabs .tab-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderDirectoryTable();
+}
+function switchYear(year,el){
+  currentYear=year;
+  document.querySelectorAll('.yf-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderDirectoryTable();
+}
+let dirFilter='';
+function filterDirTable(q){dirFilter=q;renderDirectoryTable();}
+
+function renderDirectoryTable(){
+  let filtered=students.filter(s=>s.dept===currentDept&&s.year===currentYear);
+  if(dirFilter) filtered=filtered.filter(s=>s.name.toLowerCase().includes(dirFilter.toLowerCase())||s.id.toLowerCase().includes(dirFilter.toLowerCase()));
+  const tbody=document.getElementById('dir-tbody');
+  if(!filtered.length){
+    tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text2)">No students found for ${currentDept} — Year ${currentYear}</td></tr>`;
+    return;
+  }
+  tbody.innerHTML=filtered.map((s,i)=>{
+    const p=pct(s.att,s.wd);
+    return `<tr>
+      <td style="color:var(--text2);font-size:.78rem;font-family:'JetBrains Mono',monospace">${i+1}</td>
+      <td style="font-weight:600">${s.name}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--accent)">${s.id}</td>
+      <td><button class="btn btn-outline btn-xs" onclick="openStudentProfile('${s.id}')">👤 Details</button></td>
+      <td><button class="btn btn-success btn-xs" onclick="openAttendanceReport('${s.id}')">📊 Report</button></td>
+      <td><button class="btn btn-sm" style="background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid rgba(139,92,246,0.3);" onclick="openAttendanceDetails('${s.id}')">📋 Overall Detail</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════
+// SUBPAGE NAVIGATION
+// ══════════════════════════
+function openSubpage(id){
+  closeAllSubpages();
+  document.getElementById(id).classList.add('active');
+}
+function closeSubpage(id){
+  document.getElementById(id).classList.remove('active');
+}
+function closeAllSubpages(){
+  document.querySelectorAll('.subpage').forEach(s=>s.classList.remove('active'));
+}
+
+// ══════════════════════════
+// SUBPAGE 1: STUDENT PROFILE
+// ══════════════════════════
+function openStudentProfile(sid){
+  const s=students.find(x=>x.id===sid);
+  if(!s) return;
+  const initials=s.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('sp-avatar').textContent=initials;
+  document.getElementById('sp-name').textContent=s.name;
+  document.getElementById('sp-id').textContent='ID: '+s.id;
+  document.getElementById('sp-dept').textContent=s.dept+' · Year '+s.year+' · Semester '+s.sem;
+  document.getElementById('sp-fields').innerHTML=[
+    ['Full Name',s.name],['Username',s.username],['Student ID',s.id],
+    ['Department',s.dept],['Year','Year '+s.year],['Semester','Semester '+s.sem],
+    ['Date of Birth',s.dob],['Phone Number',s.phone],['Email ID',s.email],
+    ['Aadhar Number',s.aadhar],['City Address',s.city],['Home Address',s.home],
+  ].map(([l,v])=>`<div class="sp-field"><div class="sf-l">${l}</div><div class="sf-v">${v}</div></div>`).join('');
+  openSubpage('subpage-profile');
+}
+
+// ══════════════════════════
+// SUBPAGE 2: TODAY'S ATTENDANCE
+// ══════════════════════════
+function openAttendanceReport(sid){
+  const s=students.find(x=>x.id===sid);
+  if(!s) return;
+  const initials=s.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('att-sp-avatar').textContent=initials;
+  document.getElementById('att-sp-name').textContent=s.name;
+  document.getElementById('att-sp-id').textContent='ID: '+s.id;
+  document.getElementById('att-sp-dept').textContent=s.dept+' · Year '+s.year+' · Semester '+s.sem;
+  const rows=genTodayAtt(s);
+  document.getElementById('today-att-tbody').innerHTML=rows.map((r,i)=>`
+    <tr>
+      <td style="color:var(--text2);font-family:'JetBrains Mono',monospace;font-size:.78rem">${i+1}</td>
+      <td style="font-weight:500">${r.subject}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--text2)">${r.time}</td>
+      <td><span class="badge badge-${r.status}">${r.status.charAt(0).toUpperCase()+r.status.slice(1)}</span></td>
+      <td style="font-size:.78rem;color:var(--text2)">${r.by}</td>
+    </tr>
+  `).join('');
+  openSubpage('subpage-attendance');
+}
+
+// ══════════════════════════
+// SUBPAGE 3: ATTENDANCE DETAILS
+// ══════════════════════════
+function openAttendanceDetails(sid){
+  const s=students.find(x=>x.id===sid);
+  if(!s) return;
+  activeAlertStudent=s;
+  const initials=s.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('det-avatar').textContent=initials;
+  document.getElementById('det-name').textContent=s.name;
+  document.getElementById('det-meta').textContent=s.id+' · '+s.dept+' · Year '+s.year+' · Semester '+s.sem;
+
+  const p=pct(s.att,s.wd);
+  const alertBox=document.getElementById('att-pct-alert');
+  alertBox.className='att-alert-box '+(p<75?'danger':'safe');
+  document.getElementById('att-pct-num').textContent=p+'%';
+  document.getElementById('att-pct-title').textContent=p<75?'⚠️ Below Minimum Threshold':'✅ Attendance Safe';
+  document.getElementById('att-pct-sub').textContent=p<75
+    ?`Current attendance ${p}% is below the required 75%. Action required.`
+    :`Current attendance ${p}% meets the required 75% minimum.`;
+  document.getElementById('send-alert-btn').style.display=p<75?'inline-flex':'none';
+
+  // reset dropdown
+  document.querySelector('#subpage-details .form-select').value='';
+  document.getElementById('detail-table-wrap').style.display='none';
+  openSubpage('subpage-details');
+}
+
+function renderDetailTable(type){
+  if(!type||!activeAlertStudent){document.getElementById('detail-table-wrap').style.display='none';return;}
+  const s=activeAlertStudent;
+  const rows=type==='monthly'?genMonthlyAtt(s):genOverallAtt(s);
+  document.getElementById('det-icon').textContent=type==='monthly'?'📆':'📊';
+  document.getElementById('det-table-title').textContent=type==='monthly'?'Monthly Attendance Report (April 2026)':'Overall Attendance Report (All Semesters)';
+  document.getElementById('detail-tbody').innerHTML=rows.map((r,i)=>`
+    <tr>
+      <td style="color:var(--text2);font-family:'JetBrains Mono',monospace;font-size:.78rem">${i+1}</td>
+      <td style="font-size:.82rem;color:var(--text2)">${r.date}</td>
+      <td style="font-weight:500">${r.subject}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text2)">${r.time}</td>
+      <td><span class="badge badge-${r.status}">${r.status.charAt(0).toUpperCase()+r.status.slice(1)}</span></td>
+    </tr>
+  `).join('');
+  // Summary
+  const total=rows.length, present=rows.filter(r=>r.status==='present').length, absent=rows.filter(r=>r.status==='absent').length, late=rows.filter(r=>r.status==='late').length;
+  const calcPct=total>0?Math.round((present/total)*100):0;
+  document.getElementById('detail-summary').innerHTML=[
+    ['Total Classes',total,'var(--accent)'],
+    ['Present',present,'var(--success)'],
+    ['Absent',absent,'var(--danger)'],
+    ['Late',late,'var(--warn)'],
+    ['Attendance %',calcPct+'%',calcPct>=75?'var(--success)':'var(--danger)'],
+  ].map(([l,v,c])=>`<div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 16px;text-align:center;min-width:110px;flex:1;">
+    <div style="font-size:1.4rem;font-weight:800;color:${c}">${v}</div>
+    <div style="font-size:0.7rem;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;font-family:'JetBrains Mono',monospace;margin-top:4px;">${l}</div>
+  </div>`).join('');
+  document.getElementById('detail-table-wrap').style.display='block';
+}
+
+// ══════════════════════════
+// SEND ALERT MODAL
+// ══════════════════════════
+function openAlertModal(){
+  if(!activeAlertStudent) return;
+  const s=activeAlertStudent;
+  const p=pct(s.att,s.wd);
+  document.getElementById('alert-to-label').textContent=`To: ${s.name} (${s.id}) — ${s.email}`;
+  document.getElementById('alert-pct-warning').textContent=`Student's attendance is ${p}%, below the required 75%. Send an alert to their student portal login page.`;
+  document.getElementById('alert-message').value=`Dear ${s.name},\n\nYour current attendance stands at ${p}%, which is below the required minimum of 75%.\n\nPlease ensure regular attendance to avoid academic penalties and eligibility issues for examinations.\n\nRegards,\nAdmin — AttendanceMS\nGovt. Science College, Mangaluru`;
+  document.getElementById('modal-alert').classList.add('open');
+}
+function sendAlert(){
+  closeModal('modal-alert');
+  showToast(`⚠️ Alert sent to ${activeAlertStudent.name}'s student portal!`,'warn');
+}
+
+// ══════════════════════════
+// MANAGE
+// ══════════════════════════
+function switchManage(section,el){
+  ['add-student','add-branch','remove-student','remove-branch'].forEach(s=>{
+    document.getElementById('manage-'+s).style.display='none';
+  });
+  document.getElementById('manage-'+section).style.display='block';
+  document.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+function previewPhoto(input){
+  if(input.files&&input.files[0]){
+    const reader=new FileReader();
+    reader.onload=e=>{document.getElementById('photo-upload-zone').innerHTML=`<img src="${e.target.result}" alt="Preview">`;};
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+function sendOTP(){
+  const phone=document.getElementById('student-phone').value;
+  if(!phone){showToast('Enter phone number first','error');return;}
+  showToast('OTP sent to '+phone,'info');
+  document.getElementById('otp-sent-msg').style.display='block';
+}
+function saveStudent(){showToast('✅ Student saved successfully!','success');}
+function saveBranch(){showToast('✅ Branch added successfully!','success');}
+function clearAddForm(){
+  document.querySelectorAll('#manage-add-student input, #manage-add-student textarea, #manage-add-student select').forEach(i=>{if(i.type!=='file')i.value='';});
+  document.getElementById('photo-upload-zone').innerHTML='<span style="font-size:1.5rem;">📷</span><span>Upload Photo</span>';
+  document.getElementById('otp-sent-msg').style.display='none';
+  showToast('Form cleared','info');
+}
+function searchStudentToRemove(q){
+  const result=document.getElementById('remove-result');
+  if(!q.trim()){result.classList.remove('show');return;}
+  const found=students.find(s=>s.name.toLowerCase().includes(q.toLowerCase())||s.id.toLowerCase().includes(q.toLowerCase()));
+  if(found){
+    selectedStudent=found;
+    document.getElementById('rsr-name').textContent=found.name;
+    document.getElementById('rsr-meta').textContent=`${found.id} · ${found.dept} · Year ${found.year} · Sem ${found.sem}`;
+    result.classList.add('show');
+  } else {result.classList.remove('show');selectedStudent=null;}
+}
+function openRemoveModal(){
+  if(!selectedStudent) return;
+  document.getElementById('modal-student-name').textContent=selectedStudent.name;
+  document.getElementById('modal-remove-student').classList.add('open');
+}
+function removeStudent(){
+  closeModal('modal-remove-student');
+  document.getElementById('remove-result').classList.remove('show');
+  document.getElementById('remove-search-input').value='';
+  selectedStudent=null;
+  showToast('Student removed permanently','error');
+}
+function openRemoveBranchModal(){
+  const val=document.getElementById('remove-branch-select').value;
+  if(!val){showToast('Please select a department','warn');return;}
+  document.getElementById('modal-branch-name').textContent=val.split('—')[0].trim();
+  document.getElementById('modal-remove-branch').classList.add('open');
+}
+function removeBranch(){
+  closeModal('modal-remove-branch');
+  document.getElementById('remove-branch-select').value='';
+  showToast('Department deleted permanently','error');
+}
+function checkPwStrength(input,barId){
+  const val=input.value, bar=document.getElementById(barId);
+  let score=0;
+  if(val.length>=8)score++;
+  if(/[A-Z]/.test(val))score++;
+  if(/[0-9]/.test(val))score++;
+  if(/[^A-Za-z0-9]/.test(val))score++;
+  bar.style.width=['0%','30%','55%','80%','100%'][score];
+  bar.style.background=['#ef4444','#f59e0b','#f59e0b','#22c55e','#22c55e'][score];
+}
+function changePassword(){showToast('✅ Password updated successfully!','success');}
+
+// ══════════════════════════
+// MODAL
+// ══════════════════════════
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});
+});
+function confirmLogout(){document.getElementById('modal-logout').classList.add('open');}
+function doLogout(){
+  closeModal('modal-logout');
+  showToast('Logged out successfully','info');
+  setTimeout(()=>alert('Redirecting to login page…'),1200);
+}
+
+// ══════════════════════════
+// TOAST
+// ══════════════════════════
+function showToast(msg,type='success'){
+  const container=document.getElementById('toast-container');
+  const icons={success:'✅',error:'❌',info:'ℹ️',warn:'⚠️'};
+  const toast=document.createElement('div');
+  toast.className=`toast ${type}`;
+  toast.innerHTML=`<span>${icons[type]}</span><span>${msg}</span>`;
+  container.appendChild(toast);
+  setTimeout(()=>{
+    toast.style.opacity='0';toast.style.transform='translateX(100%)';toast.style.transition='all 0.3s';
+    setTimeout(()=>toast.remove(),300);
+  },3500);
+}
+
+init();
+</script>
+</body>
+</html>
